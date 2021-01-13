@@ -106,7 +106,7 @@ class EpsonProjectorMediaPlayer(MediaPlayerEntity):
 
     async def async_update(self):
         """Update state of device."""
-        power_state = await self._projector.get_property(POWER)
+        power_state = await self._projector.get_power()
         _LOGGER.debug("Projector status: %s", power_state)
         if not power_state or power_state == EPSON_STATE_UNAVAILABLE:
             self._available = False

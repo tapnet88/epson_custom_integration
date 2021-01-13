@@ -6,7 +6,7 @@ from homeassistant.const import CONF_HOST, CONF_NAME, CONF_PORT
 
 from . import validate_projector
 from .const import DOMAIN
-from .exceptions import CannotConnect
+from .exceptions import CannotConnect, PoweredOff
 
 DATA_SCHEMA = vol.Schema(
     {
@@ -29,12 +29,16 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         if import_config is not None:
             try:
                 projector = await validate_projector(
-                    self.hass, import_config[CONF_HOST]
+                    hass=self.hass,
+                    host=import_config[CONF_HOST],
+                    check_powered_on=True
                 )
                 await self.async_set_unique_id(unique_id)
                 self._abort_if_unique_id_configured()
             except CannotConnect:
                 errors["base"] = "cannot_connect"
+            except PoweredOff:
+                errors["base"] = "powered_off"
             else:
                 return self.async_create_entry(
                     title=import_config.pop(CONF_NAME), data=import_config
@@ -56,6 +60,8 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 self._abort_if_unique_id_configured()
             except CannotConnect:
                 errors["base"] = "cannot_connect"
+            except PoweredOff:
+                errors["base"] = "powered_off"
             else:
                 return self.async_create_entry(
                     title=user_input.pop(CONF_NAME), data=user_input
