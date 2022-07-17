@@ -1,6 +1,6 @@
 """Constants for the epson integration."""
 
-DOMAIN = "epson"
+DOMAIN = "EpsonCustom"
 SERVICE_SELECT_CMODE = "select_cmode"
 
 ATTR_CMODE = "cmode"
